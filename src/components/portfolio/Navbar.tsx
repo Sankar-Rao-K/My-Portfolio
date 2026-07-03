@@ -1,19 +1,27 @@
 import { useEffect, useState } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X, FileText } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
-const links = [
-  { href: "#about", label: "About" },
-  { href: "#skills", label: "Skills" },
-  { href: "#projects", label: "Projects" },
-  { href: "#experience", label: "Experience" },
-  { href: "#contact", label: "Contact" },
+type NavItem =
+  | { type: "anchor"; hash: string; label: string }
+  | { type: "route"; to: string; label: string };
+
+const NAV_ITEMS: NavItem[] = [
+  { type: "anchor", hash: "#about", label: "About" },
+  { type: "anchor", hash: "#skills", label: "Skills" },
+  { type: "anchor", hash: "#projects", label: "Projects" },
+  { type: "anchor", hash: "#experience", label: "Experience" },
+  { type: "anchor", hash: "#certifications", label: "Certifications" },
+  { type: "anchor", hash: "#contact", label: "Contact" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string>("");
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const onHome = pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -22,19 +30,25 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Scroll-spy only makes sense on the home page, where the sections live.
   useEffect(() => {
+    if (!onHome) return;
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => { if (e.isIntersecting) setActive(`#${e.target.id}`); });
       },
       { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
     );
-    links.forEach((l) => {
-      const el = document.querySelector(l.href);
+    const anchors = NAV_ITEMS.filter((l): l is Extract<NavItem, { type: "anchor" }> => l.type === "anchor");
+    anchors.forEach((l) => {
+      const el = document.querySelector(l.hash);
       if (el) obs.observe(el);
     });
     return () => obs.disconnect();
-  }, []);
+  }, [onHome]);
+
+  // From another page, "#about" needs to become "/#about" so it routes home first.
+  const anchorHref = (hash: string) => (onHome ? hash : `/${hash}`);
 
   return (
     <header
@@ -43,28 +57,44 @@ export function Navbar() {
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <a href="#hero" className="group inline-flex items-center gap-2">
+        <Link to="/" className="group inline-flex items-center gap-2">
           <span className="grid h-8 w-8 place-items-center rounded-md bg-accent/15 text-accent font-display font-bold">
             SK
           </span>
           <span className="hidden sm:inline font-display font-semibold tracking-tight">Sankar Rao</span>
-        </a>
+        </Link>
 
         <div className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className={`relative px-3 py-2 text-sm transition-colors ${
-                active === l.href ? "text-accent" : "text-foreground/70 hover:text-foreground"
-              }`}
-            >
-              {l.label}
-              {active === l.href && (
-                <span className="absolute inset-x-3 -bottom-0.5 h-px bg-accent" />
-              )}
-            </a>
-          ))}
+          {NAV_ITEMS.map((l) => {
+            if (l.type === "route") {
+              const isActive = pathname.startsWith(l.to);
+              return (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  className={`relative px-3 py-2 text-sm transition-colors ${
+                    isActive ? "text-accent" : "text-foreground/70 hover:text-foreground"
+                  }`}
+                >
+                  {l.label}
+                  {isActive && <span className="absolute inset-x-3 -bottom-0.5 h-px bg-accent" />}
+                </Link>
+              );
+            }
+            const isActive = onHome && active === l.hash;
+            return (
+              <a
+                key={l.hash}
+                href={anchorHref(l.hash)}
+                className={`relative px-3 py-2 text-sm transition-colors ${
+                  isActive ? "text-accent" : "text-foreground/70 hover:text-foreground"
+                }`}
+              >
+                {l.label}
+                {isActive && <span className="absolute inset-x-3 -bottom-0.5 h-px bg-accent" />}
+              </a>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-2">
@@ -90,16 +120,27 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur">
           <div className="mx-auto max-w-6xl px-5 py-3 flex flex-col">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="py-2.5 text-sm text-foreground/80 hover:text-accent"
-              >
-                {l.label}
-              </a>
-            ))}
+            {NAV_ITEMS.map((l) =>
+              l.type === "route" ? (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="py-2.5 text-sm text-foreground/80 hover:text-accent"
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <a
+                  key={l.hash}
+                  href={anchorHref(l.hash)}
+                  onClick={() => setOpen(false)}
+                  className="py-2.5 text-sm text-foreground/80 hover:text-accent"
+                >
+                  {l.label}
+                </a>
+              )
+            )}
             <a
               href="/resume.pdf"
               target="_blank"

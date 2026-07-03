@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import {
@@ -9,6 +9,7 @@ import {
 import { Navbar } from "@/components/portfolio/Navbar";
 import { Footer } from "@/components/portfolio/Footer";
 import { Reveal } from "@/components/portfolio/Reveal";
+import { CERTIFICATIONS } from "@/data/certifications";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,7 +36,7 @@ const STATS = [
 
 const SKILLS: { title: string; icon: typeof Code2; items: string[] }[] = [
   { title: "Languages", icon: Code2, items: ["Python", "Java", "C", "JavaScript"] },
-  { title: "AI / ML", icon: Cpu, items: ["TensorFlow", "Keras", "NumPy", "Pandas"] },
+  { title: "AI / ML", icon: Cpu, items: ["TensorFlow", "Keras", "OpenCV", "NumPy", "Pandas"] },
   { title: "Frontend", icon: Globe, items: ["React", "Vite", "HTML", "CSS", "TypeScript"] },
   { title: "Backend & DB", icon: Database, items: ["Spring Boot", "JWT Auth", "MySQL", "Firebase", "Firestore"] },
   { title: "Mobile", icon: Sparkles, items: ["Android Studio", "On-device TFLite"] },
@@ -87,16 +88,29 @@ const PROJECTS = [
 
 const TIMELINE = [
   { year: "2026", title: "Graduated — Diploma in Computer Engineering", body: "Built Research Nest and pushed into scalable full-stack and backend architecture." },
+  { year: "2025", title: "Started internship at HMIES Solutions", body: "Joined as a Computer Engineering Intern, shipping software with Java, GitHub, and Vercel." },
   { year: "2025", title: "Shipped real-world systems", body: "Plant Disease Detection, IoT Energy Meter, and the QR Library System deployed in college." },
   { year: "2024", title: "Foundations in software & web", body: "Built up the core: data structures, web tech, system logic, and project execution." },
   { year: "2023", title: "Started Diploma in CE", body: "Began at Government Polytechnic, Anakapalli and got hooked on programming." },
 ];
 
-const CERTIFICATIONS = [
-  { title: "Certificate of Appreciation", org: "Government Polytechnic, Anakapalli", note: "For developing the real-time QR-based Library Management System now in active use." },
-  { title: "Add-on Skill Course in IoT", org: "2025", note: "IoT systems, sensors, and smart automation." },
-  { title: "Customer Care Executive (IT-ITES)", org: "2024", note: "Domestic Non Voice — professional communication & operations training." },
+// From LinkedIn — "Experience"
+const WORK_EXPERIENCE = [
+  {
+    role: "Computer Engineering Intern",
+    company: "HMIES Solutions (OPC) Pvt Ltd",
+    period: "November 2025 – May 2026 · 7 months",
+    location: "Visakhapatnam",
+    points: [
+      "Worked on software development projects using Java alongside modern tooling like GitHub and Vercel.",
+      "Collaborated with the team to analyze requirements, build solutions, and test applications.",
+      "Gained hands-on experience in programming, debugging, and software deployment following industry best practices.",
+    ],
+  },
 ];
+
+// From LinkedIn — "Top Skills"
+const CORE_STRENGTHS = ["Time Management", "Self-Management", "OpenCV"];
 
 /* ---------------- PAGE ---------------- */
 
@@ -110,6 +124,7 @@ function Portfolio() {
         <Skills />
         <Projects />
         <Experience />
+        <Certifications />
         <Contact />
       </main>
       <Footer />
@@ -214,8 +229,9 @@ function Hero() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-8 flex items-center gap-4 text-muted-foreground"
         >
+          {/* TODO: replace with your real GitHub profile URL */}
           <a href="https://github.com/" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="hover:text-accent transition"><Github className="h-5 w-5" /></a>
-          <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:text-accent transition"><Linkedin className="h-5 w-5" /></a>
+          <a href="https://www.linkedin.com/in/sankar-rao-kandi-3488b03b7" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:text-accent transition"><Linkedin className="h-5 w-5" /></a>
           <a href="mailto:kandishankar023@gmail.com" aria-label="Email" className="hover:text-accent transition"><Mail className="h-5 w-5" /></a>
         </motion.div>
 
@@ -270,6 +286,14 @@ function About() {
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {["AI / ML", "Full-stack", "Android", "System design", "Real-time apps"].map((t) => (
                   <span key={t} className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs text-accent">{t}</span>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 rounded-xl border border-border bg-surface p-4">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">Core strengths</div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {CORE_STRENGTHS.map((t) => (
+                  <span key={t} className="rounded-full border border-border bg-background/40 px-2.5 py-1 text-xs text-foreground/80">{t}</span>
                 ))}
               </div>
             </div>
@@ -368,7 +392,37 @@ function Experience() {
   return (
     <section id="experience" className="scroll-mt-24 py-24 sm:py-32 border-t border-border/60">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <SectionHeading kicker="Journey" title="Education, milestones & recognition." />
+        <SectionHeading kicker="Journey" title="Experience & education." />
+
+
+        {/* Work Experience */}
+        <div className="mb-12 space-y-4">
+          {WORK_EXPERIENCE.map((job) => (
+            <Reveal key={job.company}>
+              <div className="rounded-xl border border-border bg-surface p-5 sm:p-6">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-semibold text-base sm:text-lg">{job.role}</h3>
+                    <p className="text-sm text-accent">{job.company}</p>
+                  </div>
+                  <div className="text-right text-xs text-muted-foreground shrink-0">
+                    <p>{job.period}</p>
+                    <p>{job.location}</p>
+                  </div>
+                </div>
+                <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+                  {job.points.map((pt) => (
+                    <li key={pt} className="flex gap-2">
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" />
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
         <div className="grid gap-10 lg:grid-cols-5">
           {/* Timeline */}
           <div className="lg:col-span-3">
@@ -388,7 +442,7 @@ function Experience() {
             </ol>
           </div>
 
-          {/* Education + Certs */}
+          {/* Education */}
           <div className="lg:col-span-2 space-y-4">
             <Reveal>
               <div className="rounded-xl border border-border bg-surface p-5">
@@ -414,25 +468,74 @@ function Experience() {
                 </div>
               </div>
             </Reveal>
-
-            {CERTIFICATIONS.map((c, i) => (
-              <Reveal key={c.title} delay={0.08 + i * 0.04}>
-                <div className="rounded-xl border border-border bg-surface p-5">
-                  <div className="flex items-start gap-3">
-                    <Award className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-display font-semibold text-sm">{c.title}</h3>
-                      <p className="text-xs text-muted-foreground">{c.org}</p>
-                      <p className="mt-1 text-xs text-foreground/75">{c.note}</p>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
           </div>
         </div>
       </div>
     </section>
+  );
+}
+/* ---------------- CERTIFICATIONS ---------------- */
+
+function Certifications() {
+  return (
+    <section id="certifications" className="scroll-mt-24 py-24 sm:py-32 border-t border-border/60">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <SectionHeading kicker="Certifications" title="Certificates & recognitions." />
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {CERTIFICATIONS.map((c, i) => (
+            <Reveal key={c.id} delay={i * 0.06}>
+              <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface transition duration-300 hover:-translate-y-1 hover:border-accent/50">
+                <div className="aspect-[4/3] w-full border-b border-border bg-background/40">
+                  <CertThumb src={c.image} alt={c.title} />
+                </div>
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="font-display font-semibold leading-snug">{c.title}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {c.org} · {c.date}
+                  </p>
+                  <p className="mt-2.5 text-sm text-foreground/75">{c.note}</p>
+                  {c.credentialUrl && (
+                    <a
+                      href={c.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:opacity-80 transition"
+                    >
+                      View credential <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Shows the certificate image; falls back to an icon placeholder if the
+ *  image is missing (e.g. before you've added the file to /public/certificates). */
+function CertThumb({ src, alt }: { src?: string; alt: string }) {
+  const [failed, setFailed] = useState(!src);
+
+  if (!src || failed) {
+    return (
+      <div className="grid h-full w-full place-items-center">
+        <Award className="h-10 w-10 text-muted-foreground/40" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="h-full w-full object-cover"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
   );
 }
 
@@ -475,8 +578,9 @@ function Contact() {
             </div>
 
             <div className="flex items-center gap-2 pt-2">
-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface hover:text-accent hover:border-accent/50 transition" aria-label="GitHub"><Github className="h-4 w-4" /></a>
-              <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface hover:text-accent hover:border-accent/50 transition" aria-label="LinkedIn"><Linkedin className="h-4 w-4" /></a>
+              {/* TODO: replace with your real GitHub profile URL */}
+              <a href="https://github.com/Sankar-Rao-K" target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface hover:text-accent hover:border-accent/50 transition" aria-label="GitHub"><Github className="h-4 w-4" /></a>
+              <a href="https://www.linkedin.com/in/sankar-rao-kandi-3488b03b7" target="_blank" rel="noopener noreferrer" className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-surface hover:text-accent hover:border-accent/50 transition" aria-label="LinkedIn"><Linkedin className="h-4 w-4" /></a>
               <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-3 py-2 text-sm text-accent hover:bg-accent hover:text-accent-foreground transition">
                 <Download className="h-4 w-4" /> Resume
               </a>

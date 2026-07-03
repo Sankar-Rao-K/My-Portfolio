@@ -15,7 +15,7 @@ export default defineConfig(async ({ command, mode }) => {
 
   return {
     define,
-    css: { transformer: "lightningcss" },
+    css: { transformer: "lightningcss" as const },
     resolve: {
       alias: { "@": `${process.cwd()}/src` },
       tsconfigPaths: true,
